@@ -1,9 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
+from .views import ProgressResultView
 
 router = DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
+
+    path('match/result/<int:group_id>', ProgressResultView),
 ]

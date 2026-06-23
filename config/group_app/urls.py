@@ -11,5 +11,5 @@ urlpatterns = [
     path('show/groups', PublicGroupsViewSet.as_view()),
 
     path('user/groups/<int:group_id>', UserGroupsDeleteViewSet),
-    path('show/group/<int:group_id>', LookAtGroupsViewSet),
+    path('match/group/<int:group_id>', LookAtGroupsViewSet),
 ]

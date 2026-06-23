@@ -153,3 +153,10 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'main_app.Users'
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    }
+}

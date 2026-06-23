@@ -2,10 +2,11 @@ from django.db import transaction
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-# from rest_framework import HTTP_400_BAD_REQUEST, HTTP_405_METHOD_NOT_ALLOWED
+from django.core.cache import cache
 
 from .models import Groups
-from test_app.models import Tests
+from test_app.models import Tests, Options
+from result_app.models import Matches
 from .serializers import GroupSerializer
 from test_app.serializers import TestSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -71,7 +72,31 @@ def LookAtGroupsViewSet(request, *args, **kwargs):
     serializer = TestSerializer(tests, many=True)
     tests = serializer.data
 
+    match_data = Matches.objects.filter(user_id=user_id, status='processing')
+    match_data.delete()
+
+    match_data = Matches.objects.create(
+        user_id_id=user_id,
+        group_id_id=group_id,
+    )
+
+    correct_answers = cache.get('correct_answers')
+
+    if correct_answers is None:
+        correct_answers = dict(
+            Options.objects.filter(
+                is_correct=True
+            ).values_list("test_id", "id")
+        )
+
+        cache.set(
+            "correct_answers",
+            correct_answers,
+            timeout=300*60
+        )
+
     return Response({
+        'match_id': match_data.id,
         'group_id': group_id,
         'group_name': group_data.group_name,
         'duration': group_data.duration,
